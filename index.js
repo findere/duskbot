@@ -59,6 +59,7 @@ client.levelUtils = {
     const userData = await this.getUserData(userId);
     userData.xp += amount;
 
+    const oldLevel = userData.level;
     let leveledUp = false;
     while (userData.xp >= this.getRequiredXp(userData.level)) {
       userData.xp -= this.getRequiredXp(userData.level);
@@ -70,6 +71,7 @@ client.levelUtils = {
 
     return {
       ...userData,
+      oldLevel,
       leveledUp,
     };
   },
