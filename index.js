@@ -10,7 +10,12 @@ const {
   PermissionsBitField,
 } = require("discord.js");
 const db = require("croxydb");
-const config = require("./config.json");
+let config = {};
+try {
+  config = require("./config.json");
+} catch (e) {
+  // config.json dosyası bulunamadı (Render gibi ortamlarda bu normaldir)
+}
 
 const client = new Client({
   intents: [
@@ -23,7 +28,24 @@ const client = new Client({
 });
 
 client.commands = new Collection();
-client.config = config;
+
+// Render/Environment desteği için kanalları ayarla
+const parseChannels = (channels) => {
+  if (!channels) return [];
+  if (Array.isArray(channels)) return channels;
+  return channels.split(",").map((id) => id.trim());
+};
+
+client.config = {
+  ...config,
+  welcomeChannels: parseChannels(
+    process.env.WELCOME_CHANNELS || config.welcomeChannels
+  ),
+  levelChannels: parseChannels(
+    process.env.LEVEL_CHANNELS || config.levelChannels
+  ),
+};
+
 client.db = db;
 client.cooldowns = new Map();
 client.permissions = PermissionsBitField;
