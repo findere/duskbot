@@ -1,0 +1,14 @@
+{
+  "name": "duskdiscordbot",
+  "version": "1.0.0",
+  "description": "discord.js v14 ile gelistirilmis Turkce Discord botu",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "croxydb": "^0.0.7"
+  },
+  "license": "MIT"
+}
