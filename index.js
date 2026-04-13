@@ -165,10 +165,14 @@ process.on("uncaughtException", (error) => {
 });
 
 // Web Sunucusu (Render/UptimeRobot için)
+const port = process.env.PORT || 3000;
 http.createServer((req, res) => {
-  res.write("Bot is online!");
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.write("Dusk Requiem Bot is online!");
   res.end();
-}).listen(process.env.PORT || 3000);
+}).listen(port, "0.0.0.0", () => {
+  console.log(`Web sunucusu ${port} portunda aktif.`);
+});
 
 const token = process.env.TOKEN || config.token;
 
