@@ -99,21 +99,19 @@ client.levelUtils = {
   },
 
   async getLeaderboard() {
-    const allEntries = client.db.all();
+    const allData = client.db.all();
+    const levelsData = allData.levels || {};
 
-    // croxydb.all() returns an object: { "key": value, ... }
-    return Object.entries(allEntries)
-      .filter(([key]) => key.startsWith("levels."))
-      .map(([key, value]) => ({
-        userId: key.replace("levels.", ""),
+    return Object.entries(levelsData)
+      .map(([userId, value]) => ({
+        userId: userId,
         xp: value?.xp ?? 0,
         level: value?.level ?? 0,
       }))
       .sort((a, b) => {
         if (b.level !== a.level) {
-          return b.level - a.level;
+            return b.level - a.level;
         }
-
         return b.xp - a.xp;
       })
       .slice(0, 10);
