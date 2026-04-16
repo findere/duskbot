@@ -164,14 +164,45 @@ process.on("uncaughtException", (error) => {
   console.error("Yakalanmayan istisna:", error);
 });
 
-// Web Sunucusu (Render/UptimeRobot için)
+// Web Sunucusu (Render/UptimeRobot ve Dashboard için)
 const port = process.env.PORT || 3000;
-http.createServer((req, res) => {
-  res.writeHead(200, { "Content-Type": "text/plain" });
-  res.write("Dusk Requiem Bot is online!");
+http.createServer(async (req, res) => {
+  // CORS Başlıkları
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  if (req.method === "OPTIONS") {
+    res.writeHead(204);
+    res.end();
+    return;
+  }
+
+  if (req.url === "/api/stats") {
+    try {
+      const stats = {
+        online: true,
+        guilds: client.guilds.cache.size,
+        users: client.users.cache.size,
+        channels: client.channels.cache.size,
+        uptime: client.uptime,
+        leaderboard: await client.levelUtils.getLeaderboard(),
+      };
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(stats));
+    } catch (error) {
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Veri alınamadı" }));
+    }
+    return;
+  }
+
+  // Ana Sayfa (Uptime kontrolü için)
+  res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
+  res.write("Dusk Requiem Bot Aktif!");
   res.end();
 }).listen(port, "0.0.0.0", () => {
-  console.log(`Web sunucusu ${port} portunda aktif.`);
+  console.log(`Web sunucusu ${port} portunda aktif (Dashboard API hazır).`);
 });
 
 const token = process.env.TOKEN || config.token;
